@@ -1,0 +1,38 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "This is the core logic for assert-server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "assert-server": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=16.0.0 <19.0.0"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts",
+    "dev": "tsup --watch --onSuccess \"node ./dist/index.js\""
+  },
+  "keywords": [
+    "mocking",
+    "assert",
+    "server",
+    "testing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/secure-session": "^5.3.0",
+    "fastify": "^4.10.2",
+    "fastify-tsconfig": "^1.0.1"
+  },
+  "devDependencies": {
+    "@fastify/type-provider-typebox": "^2.4.0",
+    "@sinclair/typebox": "^0.25.13",
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/node": "^18.11.15",
+    "tsup": "^6.5.0",
+    "typescript": "^4.9.4"
+  }
+}
