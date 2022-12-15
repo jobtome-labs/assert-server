@@ -1,12 +1,17 @@
-import fastify from "fastify";
+import Fastify from "fastify";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Static, Type } from "@sinclair/typebox";
+import healthz from "./routes/healthz";
+import j2m from "./routes/j2m";
 
-const store = new Map<string, any>();
+export const store = new Map<string, any>();
 
-const server = fastify({
+const server = Fastify({
   logger: true,
 }).withTypeProvider<TypeBoxTypeProvider>();
+
+server.register(healthz, { prefix: "/healthz" });
+server.register(j2m, { prefix: "/api" });
 
 const EventReceived = Type.Object({
   event: Type.String(),
@@ -22,10 +27,6 @@ const eventSchema = {
     },
   },
 };
-
-server.get("/healthz", async (_request, response) => {
-  return response.send({ status: "ok" });
-});
 
 server.post<{ Body: EventReceivedType; Reply: any }>(
   "/reset",
@@ -51,15 +52,6 @@ server.post<{ Body: EventReceivedType; Reply: any }>(
     });
   }
 );
-
-server.post("/api/*", async (request, reply) => {
-  const { body, url } = request;
-  store.set(url, body);
-  return reply.send({
-    event: url,
-    body: body,
-  });
-});
 
 // Run the server!
 const start = async () => {

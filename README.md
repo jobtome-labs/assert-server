@@ -1,5 +1,8 @@
 # Turborepo starter
 
+assert-server/core
+assert-server/cypress-plugin
+
 This is an official pnpm starter turborepo.
 
 ## What's inside?
