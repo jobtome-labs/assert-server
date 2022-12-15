@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "noUnusedLocals": false,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts", "src/**/*spec.tsx"],
+  "exclude": ["node_modules", "dist/**"]
+}
