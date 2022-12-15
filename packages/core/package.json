@@ -1,6 +1,6 @@
 {
   "name": "@assert-server/core",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "This is the core logic for assert-server",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,6 +9,10 @@
   },
   "engines": {
     "node": ">=16.0.0 <19.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "build": "tsup src/index.ts",

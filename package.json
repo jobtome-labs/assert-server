@@ -5,6 +5,14 @@
   "workspaces": [
     "packages/*"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jobtome-labs/assert-server"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
@@ -20,7 +28,6 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "packageManager": "pnpm@7.12.1",
   "dependencies": {
     "@changesets/cli": "^2.25.2"
   }
