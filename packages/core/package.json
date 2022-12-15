@@ -27,7 +27,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fastify/secure-session": "^5.3.0",
     "fastify": "^4.10.2",
     "fastify-tsconfig": "^1.0.1"
   },
