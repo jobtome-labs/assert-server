@@ -4,9 +4,9 @@ import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Static, Type } from "@sinclair/typebox";
 import healthz from "./routes/healthz"; // TODO named export
 import j2m from "./routes/j2m";
-import { strategyRoute } from "./routes/strategy";
-import { EndpointManager } from "./endpoint-manager/EndpointManager";
-import { adminRoute } from "./routes/admin";
+import { catchAllRoute } from "./routes/catchAll";
+import { backdoorRoute } from "./routes/backdoor";
+import { Store } from "./store/store";
 
 export const store = new Map<string, any>();
 
@@ -14,12 +14,14 @@ const server = Fastify({
   logger: true,
 }).withTypeProvider<TypeBoxTypeProvider>();
 
-const endpointManager = new EndpointManager(new Map());
+const catchAllStore = new Store([]);
 
+server.register(catchAllRoute, {
+  catchAllStore,
+});
 server.register(healthz, { prefix: "/healthz" });
 server.register(j2m, { prefix: "/api" });
-server.register(strategyRoute, { prefix: "/strategy", endpointManager });
-server.register(adminRoute, { prefix: "/admin", endpointManager });
+server.register(backdoorRoute, { prefix: "/__backdoor__", catchAllStore });
 
 const EventReceived = Type.Object({
   event: Type.String(),
