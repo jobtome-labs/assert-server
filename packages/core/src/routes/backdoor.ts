@@ -5,14 +5,14 @@ export const backdoorRoute = async (fastify: FastifyInstance, options: FastifyPl
   const store = options["catchAllStore"] as AssertServerStore;
   fastify.get("/calls", async (_, reply) => {
     return reply.send({
-      status: "ok",
+      ok: true,
       data: store.get(),
     });
   });
 
   fastify.get("/clear", async (_, reply) => {
     return reply.send({
-      status: "ok",
+      ok: true,
       data: store.clear().get(),
     });
   });
