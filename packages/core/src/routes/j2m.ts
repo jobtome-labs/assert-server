@@ -9,6 +9,15 @@ const j2m = async (fastify: FastifyInstance, _opts: FastifyPluginOptions) => {
       event: url,
     });
   });
+  fastify.get("/job/*", async (request, reply) => {
+    const { url } = request;
+    const counter = (store.get("/api/job") | 0) + 1;
+    store.set("/api/job", counter);
+    request.log.info(`Call #${counter}: Received request for ${url}`);
+    return reply.send({
+      event: url,
+    });
+  });
 };
 
 export default j2m;
