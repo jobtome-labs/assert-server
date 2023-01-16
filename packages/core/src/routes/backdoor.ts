@@ -6,25 +6,32 @@ export const backdoorRoute = async (fastify: FastifyInstance, options: FastifyPl
   const store = options["catchAllStore"] as AssertServerStore;
   const mocksRegistry = options["mocksRegistry"] as MocksRegistry;
 
-  fastify.get("/calls", async (_, reply) => {
+  fastify.get("/calls/get", async (_, reply) => {
     return reply.send({
       ok: true,
       data: store.get(),
     });
   });
 
-  fastify.get("/clear", async (_, reply) => {
+  fastify.post("/calls/clear", async (_, reply) => {
     return reply.send({
       ok: true,
       data: store.clear().get(),
     });
   });
 
-  fastify.post("/registerMock", async (request, reply) => {
+  fastify.post("/mocks/register", async (request, reply) => {
     mocksRegistry.registerMock(request.body.method + request.body.path, request.body.mock);
 
     return reply.send({
       ok: true,
+    });
+  });
+
+  fastify.post("/mocks/clear", async (request, reply) => {
+    return reply.send({
+      ok: true,
+      data: mocksRegistry.clear(),
     });
   });
 };

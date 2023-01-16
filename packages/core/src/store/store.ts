@@ -25,6 +25,7 @@ export class Store implements AssertServerStore {
   }
 
   clear() {
+    console.log("called clear");
     this.data.length = 0;
     return this;
   }

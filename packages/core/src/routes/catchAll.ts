@@ -10,8 +10,6 @@ export const catchAllRoute = async (fastify: FastifyInstance, options: FastifyPl
     store.process({
       method: request.method,
       url: request.url,
-      body: request.body,
-      headers: request.headers,
     });
 
     const mockReply = mocksRegistry.getMock(request.method + request.url);
