@@ -2,8 +2,11 @@
 import Fastify from "fastify";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Static, Type } from "@sinclair/typebox";
-import healthz from "./routes/healthz";
-import j2m from "./routes/j2m";
+import { healthzRoute } from "./routes/healthz";
+import { catchAllRoute } from "./routes/catchAll";
+import { backdoorRoute } from "./routes/backdoor";
+import { Store } from "./store/store";
+import { MocksRegistry } from "./mocksRegistry/mocksRegistry";
 
 export const store = new Map<string, any>();
 
@@ -11,8 +14,15 @@ const server = Fastify({
   logger: true,
 }).withTypeProvider<TypeBoxTypeProvider>();
 
-server.register(healthz, { prefix: "/healthz" });
-server.register(j2m, { prefix: "/api" });
+const catchAllStore = new Store([]);
+const mocksRegistry = new MocksRegistry();
+
+server.register(catchAllRoute, {
+  catchAllStore,
+  mocksRegistry,
+});
+server.register(healthzRoute, { prefix: "/healthz" });
+server.register(backdoorRoute, { prefix: "/__backdoor__", catchAllStore, mocksRegistry });
 
 const EventReceived = Type.Object({
   event: Type.String(),
@@ -29,15 +39,11 @@ const eventSchema = {
   },
 };
 
-server.post<{ Body: EventReceivedType; Reply: any }>(
-  "/reset",
-  { schema: eventSchema },
-  async (request, reply) => {
-    const { event } = request.body;
-    store.set(event, null);
-    reply.status(200).send({ status: "ok" });
-  }
-);
+server.post<{ Body: EventReceivedType; Reply: any }>("/reset", { schema: eventSchema }, async (request, reply) => {
+  const { event } = request.body;
+  store.set(event, null);
+  reply.status(200).send({ status: "ok" });
+});
 
 server.post<{ Body: EventReceivedType; Reply: any }>(
   "/get",
