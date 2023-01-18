@@ -22,7 +22,9 @@ export const backdoorRoute = async (fastify: FastifyInstance, options: FastifyPl
 
   fastify.post("/mocks/register", async (request, reply) => {
     const { method, path, mock } = request.body as MockRequestBody;
+
     mocksRegistry.registerMock(method + path, mock);
+    console.log("Registered mock for: ", method, path);
 
     return reply.send({
       ok: true,
