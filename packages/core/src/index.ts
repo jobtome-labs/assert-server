@@ -7,10 +7,10 @@ import { catchAllRoute } from "./routes/catchAll";
 import { backdoorRoute } from "./routes/backdoor";
 import { Store } from "./store/store";
 import { MocksRegistry } from "./mocksRegistry/mocksRegistry";
+import loadMocks from "./loader/loadMocks";
 
 export const store = new Map<string, any>();
-
-const server = Fastify({
+export const server = Fastify({
   logger: true,
 }).withTypeProvider<TypeBoxTypeProvider>();
 
@@ -59,14 +59,3 @@ server.post<{ Body: EventReceivedType; Reply: any }>(
     });
   }
 );
-
-// Run the server!
-const start = async () => {
-  try {
-    await server.listen({ port: 3100 });
-  } catch (err) {
-    server.log.error(err);
-    process.exit(1);
-  }
-};
-start();

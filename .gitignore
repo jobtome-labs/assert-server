@@ -37,3 +37,7 @@ yarn-error.log*
 dist
 
 secret-key
+
+# ts-import
+
+*.cache
