@@ -7,7 +7,26 @@ import { catchAllRoute } from "./routes/catchAll";
 import { backdoorRoute } from "./routes/backdoor";
 import { Store } from "./store/store";
 import { MocksRegistry } from "./mocksRegistry/mocksRegistry";
-import loadMocks from "./loader/loadMocks";
+import * as tsImport from 'ts-import';
+import { glob } from "glob";
+
+glob("**/*.as.{js,ts}", (_err, files) => {
+  for (const file of files) {
+    console.log(file)
+    server.register(tsImport.loadSync(file))
+  }
+
+  start()
+})
+
+export const start = async () => {
+  try {
+    await server.listen({ port: 3100 });
+  } catch (err) {
+    server.log.error(err);
+    process.exit(1);
+  }
+};
 
 export const store = new Map<string, any>();
 export const server = Fastify({
