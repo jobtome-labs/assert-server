@@ -1,6 +1,6 @@
 {
   "name": "@assert-server/core",
-  "version": "1.1.2",
+  "version": "1.1.6",
   "description": "This is the core logic for assert-server",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
