@@ -32,6 +32,9 @@ yarn-error.log*
 # turbo
 .turbo
 
+# ts-import
+.cache
+
 # build
 
 dist
