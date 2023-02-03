@@ -13,6 +13,9 @@ import Registry from "./registry/registry";
 import Assert from "./registry/assert";
 import { start } from "@fastify/restartable";
 import { assertRoute } from "./routes/assert";
+import { as } from "./loader/rest";
+
+export default as;
 
 type RegisterHandlerBodyType = {
   name: string;
@@ -122,7 +125,7 @@ async function myApp(app: FastifyInstance) {
     });
   }
 
-  app.register(healthzRoute);
+  app.register(healthzRoute, { prefix: "/healthz" });
 
   app.get("/restart", async (_, reply) => {
     await app.restart();
