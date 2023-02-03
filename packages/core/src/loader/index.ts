@@ -4,7 +4,7 @@ import { startApplication } from "..";
 import Registry, { RegistryMock } from "../registry/registry";
 
 export const loadHandlers = (instance: any, registry: Registry, cb: any) => {
-  const items = glob.sync("**/*.as.ts", { absolute: true });
+  const items = glob.sync("**/*.as.{js,ts}", { absolute: true });
 
   const availableMocks: RegistryMock[] = [];
 

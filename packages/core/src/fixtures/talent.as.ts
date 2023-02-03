@@ -1,7 +1,7 @@
 import { as } from "../loader/rest";
 
 export const handlers = [
-  as.get("/talent/api-new/search", true, "Talent10Results", (req, reply) => {
+  as.get("/talent/api-new/search", true, "Talent10Results", (_, reply) => {
     return reply.send({
       statusCode: 200,
       statusMessage: "OK",
@@ -455,7 +455,7 @@ export const handlers = [
       },
     });
   }),
-  as.get("/talent/api-new/search", false, "TalentNotFound", (req, reply) => {
+  as.get("/talent/api-new/search", false, "TalentNotFound", (_, reply) => {
     reply.send({
       status: "success",
       data: {
