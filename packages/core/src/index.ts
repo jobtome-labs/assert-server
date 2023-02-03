@@ -10,7 +10,9 @@ import { MocksRegistry } from "./mocksRegistry/mocksRegistry";
 import avvio from "avvio";
 import { loadHandlers } from "./loader";
 import Registry from "./registry/registry";
+import Assert from "./registry/assert";
 import { start } from "@fastify/restartable";
+import { assertRoute } from "./routes/assert";
 
 type RegisterHandlerBodyType = {
   name: string;
@@ -29,6 +31,7 @@ const server = Fastify({
 const app = avvio();
 
 const registry = new Registry();
+const assert = new Assert();
 
 app.use(loadHandlers, registry);
 
@@ -108,6 +111,14 @@ async function myApp(app: FastifyInstance) {
       method: value.method,
       url: value.path,
       handler: value.resolver,
+      onRequest: (request, _, done) => {
+        assert.set({
+          method: value.method,
+          path: value.path,
+          request: request,
+        });
+        done();
+      },
     });
   }
 
@@ -132,6 +143,10 @@ async function myApp(app: FastifyInstance) {
     } else {
       reply.send(response);
     }
+  });
+
+  app.register(assertRoute, {
+    assert,
   });
 
   console.log("The following routes are now mocked:");
