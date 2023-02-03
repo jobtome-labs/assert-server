@@ -18,20 +18,20 @@ export const assertRoute = async (
     async (request, reply) => {
       const { path, method } = request.body;
       const assertResponse = assert.get({ method, path });
-      return reply.send(assertResponse);
+      reply.send(assertResponse);
     }
   );
 
   fastify.get("/assert/reset", async (_, reply) => {
     assert.resetAll();
-    return reply.send({ status: "ok" });
+    reply.send({ status: "ok" });
   });
   fastify.post<{ Body: AssertRequestBody }>(
     "/assert/reset",
     async (request, reply) => {
       const { path, method } = request.body;
       assert.reset({ method, path });
-      return reply.send({ status: "ok" });
+      reply.send({ status: "ok" });
     }
   );
 };

@@ -2,6 +2,6 @@ import { FastifyInstance } from "fastify";
 
 export async function healthzRoute(fastify: FastifyInstance) {
   fastify.get("/", async (_request, reply) => {
-    return reply.send({ status: "ok" });
+    reply.send({ status: "ok" });
   });
 }

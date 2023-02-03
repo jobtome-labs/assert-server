@@ -2,7 +2,7 @@ import { as } from "../loader/rest";
 
 export const handlers = [
   as.get("/talent/api-new/search", true, "Talent10Results", (_, reply) => {
-    return reply.send({
+    reply.send({
       statusCode: 200,
       statusMessage: "OK",
       success: true,

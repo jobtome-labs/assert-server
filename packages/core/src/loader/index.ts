@@ -21,7 +21,7 @@ export const loadHandlers = (instance: any, registry: Registry, cb: any) => {
   registry.loadAllMocks(availableMocks);
   registry.loadDefaultMocks(availableMocks);
 
-  console.log("All mocks has been loaded, ready to mock!");
+  console.log("All mocks have been loaded, ready to mock requests! 😀");
 
   instance.use(startApplication);
   cb();
