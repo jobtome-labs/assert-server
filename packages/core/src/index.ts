@@ -1,72 +1,65 @@
 #!/usr/bin/env node
-import Fastify from "fastify";
-import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
-import { Static, Type } from "@sinclair/typebox";
+export { as } from "./loader/rest";
+import { FastifyInstance } from "fastify";
 import { healthzRoute } from "./routes/healthz";
-import { catchAllRoute } from "./routes/catchAll";
-import { backdoorRoute } from "./routes/backdoor";
-import { Store } from "./store/store";
-import { MocksRegistry } from "./mocksRegistry/mocksRegistry";
+import avvio from "avvio";
+import { start } from "@fastify/restartable";
+import { loadHandlers } from "./loader";
+import Registry from "./registry/registry";
+import Store from "./registry/requestStore";
+import { assertRoute } from "./routes/assert";
+import { route } from "./routes/handlers";
 
-export const store = new Map<string, any>();
+const app = avvio();
 
-const server = Fastify({
-  logger: true,
-}).withTypeProvider<TypeBoxTypeProvider>();
+const registry = new Registry();
+const store = new Store();
 
-const catchAllStore = new Store([]);
-const mocksRegistry = new MocksRegistry();
+app.use(loadHandlers, registry);
 
-server.register(catchAllRoute, {
-  catchAllStore,
-  mocksRegistry,
-});
-server.register(healthzRoute, { prefix: "/healthz" });
-server.register(backdoorRoute, { prefix: "/__backdoor__", catchAllStore, mocksRegistry });
+export async function startApplication() {
+  const { listen } = await start({
+    protocol: "http", // or 'https'
+    hostname: "127.0.0.1",
+    port: 3100,
+    app: myApp,
+    logger: true,
+  });
 
-const EventReceived = Type.Object({
-  event: Type.String(),
-});
+  await listen();
+}
 
-type EventReceivedType = Static<typeof EventReceived>;
+async function myApp(app: FastifyInstance) {
+  const activeMocks = registry.getActiveMocks();
 
-const eventSchema = {
-  body: EventReceived,
-  response: {
-    200: {
-      response: Type.Any(),
-    },
-  },
-};
-
-server.post<{ Body: EventReceivedType; Reply: any }>("/reset", { schema: eventSchema }, async (request, reply) => {
-  const { event } = request.body;
-  store.set(event, null);
-  reply.status(200).send({ status: "ok" });
-});
-
-server.post<{ Body: EventReceivedType; Reply: any }>(
-  "/get",
-  {
-    schema: eventSchema,
-  },
-  async (request, reply) => {
-    const { event } = request.body;
-    const data = store.get(event);
-    request.log.info(data);
-    reply.send({
-      response: data,
+  for (let value of activeMocks.values()) {
+    app.route({
+      method: value.method,
+      url: value.path,
+      handler: value.resolver,
+      onResponse: (request, _, done) => {
+        store.set({
+          method: value.method,
+          path: value.path,
+          request: request,
+        });
+        done();
+      },
     });
   }
-);
 
-// Run the server!
-const start = async () => {
-  try {
-    await server.listen({ port: 3100 });
-  } catch (err) {
-    server.log.error(err);
-    process.exit(1);
-  }
-};
-start();
+  app.register(healthzRoute, { prefix: "/healthz" });
+
+  app.register(route, {
+    registry,
+    prefix: "/route",
+  });
+
+  app.register(assertRoute, {
+    store,
+    prefix: "/assert",
+  });
+
+  console.log("The following routes are now mocked:");
+  console.log(app.printRoutes());
+}
