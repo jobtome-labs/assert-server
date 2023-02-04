@@ -1,36 +1,37 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
-import Assert, { AssertData } from "../registry/assert";
+import Store, { StoreData } from "../registry/requestStore";
 
 type AssertRequestBody = {
   path: string;
   method: string;
 };
 
-type AssertResponsePayload = AssertData[];
+type AssertResponsePayload = StoreData[];
 
 export const assertRoute = async (
   fastify: FastifyInstance,
   options: FastifyPluginOptions
 ) => {
-  const assert = options["assert"] as Assert;
+  const store = options["store"] as Store;
   fastify.post<{ Body: AssertRequestBody; Reply: AssertResponsePayload }>(
-    "/assert",
+    "/",
     async (request, reply) => {
       const { path, method } = request.body;
-      const assertResponse = assert.get({ method, path });
+      const assertResponse = store.get({ method, path });
       reply.send(assertResponse);
     }
   );
 
-  fastify.get("/assert/reset", async (_, reply) => {
-    assert.resetAll();
+  fastify.get("/reset", async (_, reply) => {
+    store.resetAll();
     reply.send({ status: "ok" });
   });
+
   fastify.post<{ Body: AssertRequestBody }>(
-    "/assert/reset",
+    "/reset",
     async (request, reply) => {
       const { path, method } = request.body;
-      assert.reset({ method, path });
+      store.reset({ method, path });
       reply.send({ status: "ok" });
     }
   );

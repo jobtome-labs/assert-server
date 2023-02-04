@@ -1,14 +1,14 @@
 import { FastifyRequest } from "fastify";
 import { RESTMethods } from "../loader/rest";
 
-export type AssertData = {
+export type StoreData = {
   body: FastifyRequest["body"];
   query: FastifyRequest["query"];
   headers: FastifyRequest["headers"];
 };
 
-export default class Assert {
-  public request: Map<string, AssertData[]> = new Map();
+export default class Store {
+  public request: Map<string, StoreData[]> = new Map();
 
   public set = ({
     method,

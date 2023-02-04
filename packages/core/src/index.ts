@@ -1,30 +1,19 @@
 #!/usr/bin/env node
+export { as } from "./loader/rest";
 import { FastifyInstance } from "fastify";
 import { healthzRoute } from "./routes/healthz";
 import avvio from "avvio";
+import { start } from "@fastify/restartable";
 import { loadHandlers } from "./loader";
 import Registry from "./registry/registry";
-import Assert from "./registry/assert";
-import { start } from "@fastify/restartable";
+import Store from "./registry/requestStore";
 import { assertRoute } from "./routes/assert";
-import { as } from "./loader/rest";
-
-export default as;
-
-type RegisterHandlerBodyType = {
-  name: string;
-  path: string;
-};
-
-type RegisterHandlerResponseType = {
-  status: number;
-  message: string;
-};
+import { route } from "./routes/handlers";
 
 const app = avvio();
 
 const registry = new Registry();
-const assert = new Assert();
+const store = new Store();
 
 app.use(loadHandlers, registry);
 
@@ -49,7 +38,7 @@ async function myApp(app: FastifyInstance) {
       url: value.path,
       handler: value.resolver,
       onResponse: (request, _, done) => {
-        assert.set({
+        store.set({
           method: value.method,
           path: value.path,
           request: request,
@@ -61,29 +50,14 @@ async function myApp(app: FastifyInstance) {
 
   app.register(healthzRoute, { prefix: "/healthz" });
 
-  app.get("/restart", async (_, reply) => {
-    await app.restart();
-    reply.send({ status: "ok" });
-  });
-
-  app.post<{
-    Body: RegisterHandlerBodyType;
-    Reply: RegisterHandlerResponseType;
-  }>("/set", async (req, reply) => {
-    const { name, path } = req.body;
-
-    const response = registry.setNewActiveMocks({ name, path });
-
-    if (response.status === 200) {
-      reply.send(response);
-      await app.restart();
-    } else {
-      reply.send(response);
-    }
+  app.register(route, {
+    registry,
+    prefix: "/route",
   });
 
   app.register(assertRoute, {
-    assert,
+    store,
+    prefix: "/assert",
   });
 
   console.log("The following routes are now mocked:");
