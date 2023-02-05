@@ -9,7 +9,6 @@ import Registry from "./registry/registry";
 import Store from "./registry/requestStore";
 import { assertRoute } from "./routes/assert";
 import { route } from "./routes/handlers";
-
 const app = avvio();
 
 const registry = new Registry();
