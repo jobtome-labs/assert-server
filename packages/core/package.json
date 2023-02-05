@@ -30,9 +30,12 @@
     "@fastify/restartable": "^1.4.0",
     "@types/glob": "^8.0.1",
     "avvio": "^8.2.0",
+    "chokidar": "^3.5.3",
     "fastify": "^4.10.2",
     "fastify-tsconfig": "^1.0.1",
     "glob": "^8.1.0",
+    "node-fetch": "^3.3.0",
+    "node-fetch-commonjs": "^3.2.4",
     "ts-import": "4.0.0-beta.10"
   },
   "devDependencies": {
