@@ -66,4 +66,21 @@ export default class Registry {
   public getActiveMocks = () => {
     return this.activeMocks;
   };
+
+  public reloadMocks = (mocks: RegistryMock[]) => {
+    const newMocks = this.allMocks.filter((mock) =>
+      mocks.filter((newMock) => {
+        return newMock.name === mock.name && newMock.path === mock.path;
+      })
+    );
+
+    this.allMocks = [];
+    this.activeMocks.clear();
+    this.loadAllMocks([...mocks, ...newMocks]);
+    this.loadDefaultMocks(this.allMocks);
+  };
+
+  public getAllMocks = () => {
+    return this.allMocks;
+  };
 }

@@ -17,6 +17,8 @@ export const route = async (
 ) => {
   const registry = options["registry"] as Registry;
 
+  app.register(require("@fastify/cors"));
+
   app.get("/restart", async (_, reply) => {
     await app.restart();
     reply.send({ status: "ok" });
@@ -36,5 +38,10 @@ export const route = async (
     } else {
       reply.send(response);
     }
+  });
+
+  app.get("/all", async (_, reply) => {
+    const response = registry.getAllMocks();
+    reply.send(response);
   });
 };

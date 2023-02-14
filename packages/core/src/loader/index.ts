@@ -1,25 +1,26 @@
-import glob from "glob";
-import * as tsImport from "ts-import";
 import { startApplication } from "..";
 import Registry, { RegistryMock } from "../registry/registry";
+import { watcher, requireWitoutCache } from "./runtimeLoader";
+import fetch from "node-fetch-commonjs";
+
+type MocksImportType = {
+  handlers: RegistryMock[];
+};
 
 export const loadHandlers = (instance: any, registry: Registry, cb: any) => {
-  const items = glob.sync("**/*.as.{js,ts}", { absolute: true });
+  watcher.on("all", (event, path) => {
+    if (event === "change" || event === "add") {
+      const mocks = requireWitoutCache(path) as MocksImportType;
+      if (!mocks.handlers) {
+        console.log(`No handlers found in ${path}`);
+        return;
+      }
 
-  const availableMocks: RegistryMock[] = [];
-
-  items.forEach((item) => {
-    const mocks = tsImport.loadSync(item, {
-      mode: tsImport.LoadMode.Compile,
-    }).handlers;
-
-    mocks.forEach((mock: RegistryMock) => {
-      availableMocks.push(mock);
-    });
+      registry.reloadMocks(mocks.handlers);
+      // Restart the application
+      fetch("http://localhost:3100/route/restart");
+    }
   });
-
-  registry.loadAllMocks(availableMocks);
-  registry.loadDefaultMocks(availableMocks);
 
   console.log("All mocks have been loaded, ready to mock requests! 😀");
 
