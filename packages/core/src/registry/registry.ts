@@ -79,4 +79,8 @@ export default class Registry {
     this.loadAllMocks([...mocks, ...newMocks]);
     this.loadDefaultMocks(this.allMocks);
   };
+
+  public getAllMocks = () => {
+    return this.allMocks;
+  };
 }

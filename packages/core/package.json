@@ -27,6 +27,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/cors": "^8.2.0",
     "@fastify/restartable": "^1.4.0",
     "@types/glob": "^8.0.1",
     "avvio": "^8.2.0",
